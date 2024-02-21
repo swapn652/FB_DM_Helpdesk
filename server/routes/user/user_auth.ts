@@ -40,5 +40,6 @@ router.post("/sign-up", async (req: Request, res: Response): Promise<void> => {
     }
 });
 
+// router.post()
 
-module.exports = router;
+export default router;

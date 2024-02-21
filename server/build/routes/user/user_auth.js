@@ -44,4 +44,5 @@ router.post("/sign-up", (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(500).send("Error creating user");
     }
 }));
-module.exports = router;
+// router.post()
+exports.default = router;
