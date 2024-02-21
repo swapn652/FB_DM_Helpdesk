@@ -2,12 +2,11 @@ import express, {Router, Request, Response} from 'express';
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import crypto from "crypto";
+import generateSecretKey from './generateSecretKey';
 
 const prisma = new PrismaClient();
-
 const router: Router = express.Router();
-
+const SECRET_KEY = generateSecretKey();
 
 router.post("/sign-up", async (req: Request, res: Response): Promise<void> => {
     const { name, password, email } = req.body;
@@ -40,6 +39,26 @@ router.post("/sign-up", async (req: Request, res: Response): Promise<void> => {
     }
 });
 
-// router.post()
+router.post('/login', async (req: Request, res: Response) => {
+    const {email, password}: {email: string, password: string} = req.body;
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                email
+            }
+        });
+
+        if(!user || !(await bcrypt.compare(password, user?.password)))
+            res.status(401).json({error: "Invalid username or password!"});
+        
+        const token = jwt.sign({id: user?.id, name: user?.name, email: user?.email}, SECRET_KEY);
+
+        res.json({token});
+    } catch(err) {
+        console.error('Error during login:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 
 export default router;

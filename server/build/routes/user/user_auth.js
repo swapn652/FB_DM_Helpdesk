@@ -15,8 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const generateSecretKey_1 = __importDefault(require("./generateSecretKey"));
 const prisma = new client_1.PrismaClient();
 const router = express_1.default.Router();
+const SECRET_KEY = (0, generateSecretKey_1.default)();
 router.post("/sign-up", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, password, email } = req.body;
     try {
@@ -44,5 +47,22 @@ router.post("/sign-up", (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(500).send("Error creating user");
     }
 }));
-// router.post()
+router.post('/login', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, password } = req.body;
+    try {
+        const user = yield prisma.user.findUnique({
+            where: {
+                email
+            }
+        });
+        if (!user || !(yield bcrypt_1.default.compare(password, user === null || user === void 0 ? void 0 : user.password)))
+            res.status(401).json({ error: "Invalid username or password!" });
+        const token = jsonwebtoken_1.default.sign({ id: user === null || user === void 0 ? void 0 : user.id, name: user === null || user === void 0 ? void 0 : user.name, email: user === null || user === void 0 ? void 0 : user.email }, SECRET_KEY);
+        res.json({ token });
+    }
+    catch (err) {
+        console.error('Error during login:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}));
 exports.default = router;
