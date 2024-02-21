@@ -10,5 +10,5 @@
     "outDir": "./build",  // Use "./build" for clarity
     "types": ["node", "express"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "routes/**/*"]
 }
