@@ -1,7 +1,7 @@
 import React from 'react'
-import { LoginCard } from '../components/LoginCard'
+import {LoginCard} from "./LoginCard";
 
-const Login = () => {
+export const LoginPage = () => {
   return (
     <div className = "bg-blue-900 min-h-screen min-w-screen flex items-center justify-center">
         <LoginCard/>
@@ -9,4 +9,3 @@ const Login = () => {
   )
 }
 
-export default Login;
